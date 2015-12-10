@@ -1,0 +1,22 @@
+{
+  "name": "lpdw-symfony2",
+  "version": "1.0.0",
+  "description": "Slides du cours symfony2 pour lpdw Cergy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Peekmo/lpdw-symfony2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Peekmo/lpdw-symfony2/issues"
+  },
+  "homepage": "https://github.com/Peekmo/lpdw-symfony2#readme",
+  "dependencies": {
+    "spectacle": "^1.0.1"
+  }
+}
