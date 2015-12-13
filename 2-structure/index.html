@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Qu'est-ce que Symfony2</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../style.css"/>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle, inverse
+# Le fonctionnement
+---
+class:  middle, inverse
+.pull-left[```
+.
+├── app
+│   ├── AppCache.php
+│   ├── AppKernel.php
+│   ├── autoload.php
+│   ├── bootstrap.php.cache
+│   ├── cache
+│   ├── config
+│   ├── console
+│   ├── logs
+│   ├── phpunit.xml.dist
+│   ├── Resources
+├── composer.json
+├── composer.lock
+├── src
+│   └── AppBundle
+└── web
+    ├── app_dev.php
+    ├── app.php
+    └── bundles
+```]
+.pull-right[
+  # Structure des répertoires
+
+  ### *app* : La Configuration de l'application
+  ### *composer.json|lock* : Les dépendances PHP
+  ### *src* : Les sources de votre application
+  ### *web* : Le répertoire public du site
+]
+---
+class:  middle, inverse
+## Le "front controller"
+
+```php
+<?php
+
+// web/app.php
+use Symfony\Component\HttpFoundation\Request;
+
+// Autoloader de Symfony2
+$loader = require __DIR__.'/../app/autoload.php';
+// Cache sur l'ensemble des classes utilisées
+include_once __DIR__.'/../app/bootstrap.php.cache';
+
+// Coeur de symfony2 en environnement de prod, sans debug
+$kernel = new AppKernel('prod', false);
+$kernel->loadClassCache();
+
+// Traitement de la requête
+$response = $kernel->handle($request);
+$response->send();
+
+// Event lancé une fois que la réponse est rendu
+$kernel->terminate($request, $response);
+```
+---
+class:  middle, inverse
+## Configuration d'apache
+### Votre root doit être dans votre dossier public : **web**
+```html
+<VirtualHost *:80>
+    ServerName www.lpdw.local
+    DocumentRoot "/path/to/symfony2/web"
+    DirectoryIndex app.php
+
+    <Directory "/path/to/symfony2/web">
+        AllowOverride All
+        Allow from All
+    </Directory>
+</VirtualHost>
+```
+---
+class:  middle, inverse
+## Accéder à votre site
+
+### En environnement de développement
+```html
+http://www.domain.tld/app_dev.php/
+```
+ - Plus de logs
+ - Cache refait à chaque changement d'un fichier
+ - Debug toolbar
+ - Non accessible en dehors de votre localhost
+
+### En environnement de production
+```html
+http://www.domain.tld/app.php/
+```
+  - Pas de debug (plus rapide)
+  - Cache optimisé
+---
+class:  middle, inverse, center
+# Les bundles
+## Dans Symfony2, tout est bundle
+---
+class: middle, inverse, center
+## Génération d'un nouveau bundle
+```bash
+$ php app/console generate:bundle
+```
+
+### La nomenclature est Vendor/YourName**Bundle**
+---
+class: middle, inverse
+## Enregistrement des bundles dans le kernel
+```php
+<?php
+
+// app/AppKernel.php
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Config\Loader\LoaderInterface;
+
+class AppKernel extends Kernel
+{
+  public function registerBundles()
+  {
+    $bundles = array(
+        new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+        ...
+        new AppBundle\AppBundle(),
+    );
+
+    if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
+        $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
+        ...
+    }
+
+    return $bundles;
+  }
+}
+```
+---
+class: middle, inverse
+## Enregistrement du routing
+### Pour tous les types excepté "annotation", le fichier de routing de votre bundle doit être enregistrer dans le fichier de routing général
+
+```yaml
+# src/your/bundle/Resources/config/routing.yml
+lpdw_homepage:
+    path:     /
+    defaults: { _controller: LpdwBundle:Default:index }
+```
+
+```yaml
+# app/config/routing.yml
+lpdw:
+    resource: "@LpdwBundle/Resources/config/routing.yml"
+    prefix:   /
+```
+---
+class: middle, inverse, center
+# Votre première action
+---
+class: middle, inverse
+### Tous les controllers sont présent dans le dossier "Controller"
+### Le nom de votre action doit **toujours** se terminer par le mot "Action"
+### Votre action doit toujours renvoyer une **Response**
+
+```php
+<?php
+// src/LpdwBundle/Controller
+namespace LpdwBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+
+class DefaultController extends Controller
+{
+    public function indexAction(Request $request)
+    {
+        return $this->render('LpdwBundle:Default:index.html.twig');
+    }
+}
+```
+---
+class: middle, inverse, center
+## Cycle de vie d'une requête
+![Request life cycle](images/requests.png)
+
+.footnote[Schéma issue [de la documentation](http://symfony.com/doc/current/components/http_kernel/introduction.html)]
+---
+class: middle, inverse
+##Manipuler l'objet Request
+```php
+// Requête AJAX ou non
+$request->isXmlHttpRequest();
+
+// Récupère un paramètre $_GET (URL)
+$request->query->get('q', null);
+
+// Récupère un paramètre $_POST
+$request->request->get('content', null);
+
+// Récupère un cookie
+$request->cookies->get('remember-me');
+
+// Test le type de requête
+$request->isMethod('POST');
+```
+---
+class: middle, inverse, center
+#L'objet Request en twig
+```twig
+{{ app.request }}
+```
+    </textarea>
+    <script src="../remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create({
+        highlightStyle: 'monokai'
+      });
+    </script>
+  </body>
+</html>
