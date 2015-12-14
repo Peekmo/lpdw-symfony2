@@ -195,7 +195,6 @@ class: middle, inverse, center
 .footnote[Schéma issue [de la documentation](http://symfony.com/doc/current/components/http_kernel/introduction.html)]
 ---
 class: middle, inverse
-##Manipuler l'objet Request
 ```php
 // Requête AJAX ou non
 $request->isXmlHttpRequest();
@@ -204,11 +203,12 @@ $request->isXmlHttpRequest();
 $request->query->get('q', null);
 
 // Récupère un paramètre $_POST
-$request->request->get('content', null);
+##Manipuler l'objet Request
 
 // Récupère un cookie
 $request->cookies->get('remember-me');
 
+$request->request->get('content', null);
 // Test le type de requête
 $request->isMethod('POST');
 ```
@@ -218,6 +218,38 @@ class: middle, inverse, center
 ```twig
 {{ app.request }}
 ```
+---
+class: middle, inverse, center
+# Documentation
+[Routing dans Symfony2](http://symfony.com/doc/2.8/book/routing.html)
+---
+class: middle, inverse, center
+# Twig
+## Système de templating
+---
+class: middle, inverse
+## Structure
+```
+├── Resources
+│    └── views
+│        └── Default
+│            └── index.html.twig
+```
+
+### Chemin d'inclusion
+```
+LpdwBundle:Default:index.html.twig
+      ^       ^        ^
+      |       |        |
+    Bundle    |     Fichier
+              |
+Premier niveau de répertoire dans 'views'
+```
+---
+class: middle, inverse, center
+# Documentation
+[Routing dans Symfony2](http://symfony.com/doc/2.8/book/routing.html)
+
     </textarea>
     <script src="../remark-latest.min.js">
     </script>
